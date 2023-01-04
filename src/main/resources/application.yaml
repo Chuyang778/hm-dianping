@@ -18,6 +18,10 @@ spring:
         max-idle: 10
         min-idle: 1
         time-between-eviction-runs: 10s
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
   jackson:
     default-property-inclusion: non_null # JSON处理时忽略非空字段
 mybatis-plus:
