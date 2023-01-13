@@ -2,6 +2,7 @@ package com.hmdp.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hmdp.dto.Result;
 import com.hmdp.entity.ShopType;
 import com.hmdp.mapper.ShopTypeMapper;
@@ -39,13 +40,14 @@ public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> i
             return Result.ok(typeList);
         }
         //不存在直接查询数据库
-        List<ShopType> shopTypeList = query().orderByAsc("sort").list();
+        QueryWrapper<ShopType> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByAsc("sort");
+        List<ShopType> shopTypeList = this.list(queryWrapper);
         if (shopTypeList == null) {
             return Result.fail("分类不存在");
         }
-        stringRedisTemplate.opsForValue().set(key,JSONUtil.toJsonStr(shopTypeList));
+        stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(shopTypeList));
 
         return Result.ok(shopTypeList);
-
     }
 }

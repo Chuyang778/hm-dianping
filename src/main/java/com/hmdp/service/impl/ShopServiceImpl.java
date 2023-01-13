@@ -54,7 +54,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         //Shop shop = queryWithMutex(id);
 
         //逻辑过期解决缓存击穿
-        Shop shop = cacheClient.queryWithLogicalExpire(CACHE_SHOP_KEY,id,Shop.class,this::getById,20L,TimeUnit.SECONDS);
+        Shop shop = cacheClient.queryWithLogicalExpire(CACHE_SHOP_KEY, id, Shop.class, this::getById, 20L, TimeUnit.SECONDS);
         if (shop == null) {
             return Result.fail("商铺不存在!");
         }
@@ -64,7 +64,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
     private static final ExecutorService CACHE_REBUILD_EXECUTOR = Executors.newFixedThreadPool(10);
 
-/*    public Shop queryWithLogicalExpire(Long id) {
+    public Shop queryWithLogicalExpire(Long id) {
         String key = RedisConstants.CACHE_SHOP_KEY + id;
         //1.从redis查询商铺缓存
         String shopJson = stringRedisTemplate.opsForValue().get(key);
@@ -87,7 +87,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         if (trylock) {
             CACHE_REBUILD_EXECUTOR.submit(() -> {
                 try {
-                    this.saveShop2Redis(id,20L);
+                    this.saveShop2Redis(id, 20L);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 } finally {
@@ -97,9 +97,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         }
 
         return shop;
-    }*/
+    }
 
-/*    public Shop queryWithMutex(Long id) {
+    public Shop queryWithMutex(Long id) {
         String key = RedisConstants.CACHE_SHOP_KEY + id;
         //1.从redis查询商铺缓存
         String shopJson = stringRedisTemplate.opsForValue().get(key);
@@ -144,9 +144,10 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         }
         //8.返回
         return shop;
-    }*/
+    }
 
-/*    public Shop queryWithPassThrough(Long id) {
+    //缓存穿透
+    public Shop queryWithPassThrough(Long id) {
         String key = RedisConstants.CACHE_SHOP_KEY + id;
         //1.从redis查询商铺缓存
         String shopJson = stringRedisTemplate.opsForValue().get(key);
@@ -170,9 +171,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(shop), CACHE_SHOP_TTL, TimeUnit.MINUTES);
         //7.返回信息
         return shop;
-    }*/
+    }
 
-/*    private boolean trylock(String key) {
+    private boolean trylock(String key) {
         Boolean flag = stringRedisTemplate.opsForValue().setIfAbsent(key, "1", LOCK_SHOP_TTL, TimeUnit.SECONDS);
         return BooleanUtil.isTrue(flag);
     }
@@ -189,7 +190,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
         redisData.setExpireTime(LocalDateTime.now().plusSeconds(expireSeconds));
         stringRedisTemplate.opsForValue().set(CACHE_SHOP_KEY + id, JSONUtil.toJsonStr(redisData));
 
-    }*/
+    }
 
     @Override
     @Transactional

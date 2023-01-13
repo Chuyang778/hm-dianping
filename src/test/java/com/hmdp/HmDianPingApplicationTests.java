@@ -50,4 +50,9 @@ class HmDianPingApplicationTests {
 
     }
 
+    @Test
+    void test2() {
+        System.out.println(1 & 8);
+    }
+
 }
